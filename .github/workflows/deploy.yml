@@ -25,7 +25,8 @@ jobs:
 
       - name: Copy files to production repo
         run: |
-          cp -r * production-repo/  # Copy files from the testing repo to the production repo
+          shopt -s dotglob  # Include hidden files
+          cp -r * production-repo/  # Copy all files except the production-repo directory itself
           cd production-repo
           git add .
           git commit -m "Deploy from testing repo" || echo "No changes to commit"
