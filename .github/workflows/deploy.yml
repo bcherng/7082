@@ -3,7 +3,7 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - main 
+      - main  # Trigger on pushes to the main branch
 
 jobs:
   deploy:
@@ -13,17 +13,20 @@ jobs:
       - name: Checkout testing repo
         uses: actions/checkout@v2
         with:
-          repository: "ZhengHanShuu/COMP7082_Group5"
-          token: ${{ secrets.GH_TOKEN }}
-          ref: main  
+          repository: "ZhengHanShuu/COMP7082_Group5"  # Your testing repo
+          token: ${{ secrets.GH_TOKEN }}  # Access token for the testing repo
+          ref: main  # The branch to check out
 
       - name: Clone production repo
         run: |
           git config --global user.name "bcherng"
           git config --global user.email "briancherngsch@gmail.com"
-          git clone https://github.com/bcherng/7082.git production-repo 
-          cd production-repo  # Change directory to the cloned repo
-          cp -r ../* .  # Copy files from the testing repo to the production repo
+          git clone https://github.com/bcherng/7082.git production-repo
+          
+      - name: Copy files to production repo
+        run: |
+          cp -r * production-repo/  # Copy all files to the production repo directory
+          cd production-repo
           git add .
-          git commit -m "Deploy from testing repo"
+          git commit -m "Deploy from testing repo" || echo "No changes to commit"
           git push https://bcherng:${{ secrets.GH_TOKEN }}@github.com/bcherng/7082.git
