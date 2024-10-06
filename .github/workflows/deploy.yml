@@ -1,36 +1,32 @@
-name: Deploy to Production
+name: Clone Testing Repo
 
 on:
-  push:
-    branches:
-      - main  # Trigger on pushes to the main branch
+  workflow_dispatch:  # This allows manual triggering or API calls
 
 jobs:
-  deploy:
+  clone:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout testing repo
+      - name: Checkout Production Repo
         uses: actions/checkout@v2
         with:
-          repository: "ZhengHanShuu/COMP7082_Group5"  # Your testing repo
-          token: ${{ secrets.GH_TOKEN }}  # Access token for the testing repo
-          ref: main  # The branch to check out
+          repository: bcherng/7082
+          token: ${{ secrets.GH_TOKEN }}
 
-      - name: Clone production repo
+      - name: Clone Testing Repo
         run: |
-          git config --global user.name "bcherng"
-          git config --global user.email "briancherngsch@gmail.com"
-          git clone https://github.com/bcherng/7082.git production-repo  # Clone into a subdirectory
+          git clone https://github.com/ZhengHanShuu/COMP7082_Group5.git
 
-      - name: Copy files to production repo
+      - name: Copy Files to Production Repo
         run: |
-          # Use a temporary directory to avoid copying conflicts
-          mkdir temp-deploy
-          cp -r * temp-deploy/  # Copy all files to the temporary directory
-          cp -r temp-deploy/* production-repo/  # Copy from temporary to production repo
-          cd production-repo
+          cp -r COMP7082_Group5/* .
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "briancherngsch@gmail.com"
+          git config --local user.name "bcherng"
           git add .
-          git commit -m "Deploy from testing repo" || echo "No changes to commit"
-          git push https://bcherng:${{ secrets.GH_TOKEN }}@github.com/bcherng/7082.git
-          rm -rf ../temp-deploy  # Clean up the temporary directory
+          git commit -m "Update from testing repo" || echo "No changes to commit"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
