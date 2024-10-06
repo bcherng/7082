@@ -25,8 +25,12 @@ jobs:
 
       - name: Copy files to production repo
         run: |
-          cp -r !("production-repo")/* production-repo/  # Copy all files except the production-repo directory itself
+          # Use a temporary directory to avoid copying conflicts
+          mkdir temp-deploy
+          cp -r * temp-deploy/  # Copy all files to the temporary directory
+          cp -r temp-deploy/* production-repo/  # Copy from temporary to production repo
           cd production-repo
           git add .
           git commit -m "Deploy from testing repo" || echo "No changes to commit"
           git push https://bcherng:${{ secrets.GH_TOKEN }}@github.com/bcherng/7082.git
+          rm -rf ../temp-deploy  # Clean up the temporary directory
