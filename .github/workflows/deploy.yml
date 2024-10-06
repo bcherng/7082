@@ -21,11 +21,15 @@ jobs:
         run: |
           git config --global user.name "bcherng"
           git config --global user.email "briancherngsch@gmail.com"
-          git clone https://github.com/bcherng/7082.git production-repo
-          
+          git clone https://github.com/bcherng/7082.git .  # Clone directly into the current directory
+
+      - name: Clear existing files
+        run: |
+          rm -rf *  # Remove all files in the current directory
+
       - name: Copy files to production repo
         run: |
-          cp -r * .
+          cp -r ../* .  # Copy files from the testing repo to the production repo
           git add .
           git commit -m "Deploy from testing repo" || echo "No changes to commit"
           git push https://bcherng:${{ secrets.GH_TOKEN }}@github.com/bcherng/7082.git
