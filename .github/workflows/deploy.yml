@@ -1,7 +1,7 @@
 name: Clone Testing Repo
 
 on:
-  workflow_dispatch:  # This allows manual triggering or API calls
+  repository_dispatch:  # This allows manual triggering or API calls
 
 jobs:
   clone:
